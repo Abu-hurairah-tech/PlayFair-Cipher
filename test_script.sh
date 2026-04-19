@@ -26,6 +26,5 @@ echo "5. Choose option 4 to decrypt the file"
 echo "6. Compare original vs decrypted to verify formatting"
 
 echo ""
-echo "Program is ready for demonstration!"
 echo "Compile command used: g++ -o playfair main.cpp playfair.cpp"
 echo "Run command: ./playfair"
