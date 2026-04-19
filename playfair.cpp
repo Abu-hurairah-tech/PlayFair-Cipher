@@ -9,6 +9,7 @@ void Playfair::buildMatrix()
     string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     string fullList = keyword + alphabet;
     string preparedString = "";
+
     for (char c : fullList)
     {
         c = toupper(c);
@@ -331,43 +332,6 @@ void Playfair::encryptFilePreserveFormat(string inputFileName, string outputFile
     }
 }
 
-void Playfair::decryptFilePreserveFormat(string inputFileName, string outputFileName)
-{
-    ifstream inputFile(inputFileName);
-    ofstream outputFile(outputFileName);
-
-    if (inputFile.is_open() && outputFile.is_open())
-    {
-        string line, fullText = "";
-
-        // Read the whole file
-        while (getline(inputFile, line))
-        {
-            fullText += line + "\n";
-        }
-
-        // Remove the last extra newline
-        if (!fullText.empty() && fullText.back() == '\n')
-        {
-            fullText.pop_back();
-        }
-
-        // Decrypt while preserving format
-        string decrypted = decryptWithFormatting(fullText);
-
-        // Save to output file
-        outputFile << decrypted;
-
-        inputFile.close();
-        outputFile.close();
-        cout << Color::GREEN << "[SUCCESS] File decrypted successfully with preserved formatting!" << Color::RESET << endl;
-    }
-    else
-    {
-        cout << Color::RED << "[ERROR] Could not open files for decryption." << Color::RESET << endl;
-    }
-}
-
 // Keyword Management Functions
 void Playfair::saveKeyword(string filename)
 {
@@ -416,6 +380,20 @@ bool Playfair::loadKeyword(string filename)
     return false;
 }
 
+void Playfair::decryptKeywordFile(string filename)
+{
+    if (!fileExists(filename))
+    {
+        return;
+    }
+
+    // Create a temporary cipher with master key
+    Playfair masterCipher(masterKey);
+
+    string tempFile = "temp_" + filename;
+    masterCipher.decryptFilePreserveFormat(filename, tempFile);
+}
+
 void Playfair::encryptKeywordFile(string filename)
 {
     // Create a temporary cipher with master key
@@ -431,18 +409,41 @@ void Playfair::encryptKeywordFile(string filename)
     cout << Color::CYAN << "[INFO] Keyword file encrypted with master key for security." << Color::RESET << endl;
 }
 
-void Playfair::decryptKeywordFile(string filename)
+void Playfair::decryptFilePreserveFormat(string inputFileName, string outputFileName)
 {
-    if (!fileExists(filename))
+    ifstream inputFile(inputFileName);
+    ofstream outputFile(outputFileName);
+
+    if (inputFile.is_open() && outputFile.is_open())
     {
-        return;
+        string line, fullText = "";
+
+        // Read the whole file
+        while (getline(inputFile, line))
+        {
+            fullText += line + "\n";
+        }
+
+        // Remove the last extra newline
+        if (!fullText.empty() && fullText.back() == '\n')
+        {
+            fullText.pop_back();
+        }
+
+        // Decrypt while preserving format
+        string decrypted = decryptWithFormatting(fullText);
+
+        // Save to output file
+        outputFile << decrypted;
+
+        inputFile.close();
+        outputFile.close();
+        cout << Color::GREEN << "[SUCCESS] File decrypted successfully with preserved formatting!" << Color::RESET << endl;
     }
-
-    // Create a temporary cipher with master key
-    Playfair masterCipher(masterKey);
-
-    string tempFile = "temp_" + filename;
-    masterCipher.decryptFilePreserveFormat(filename, tempFile);
+    else
+    {
+        cout << Color::RED << "[ERROR] Could not open files for decryption." << Color::RESET << endl;
+    }
 }
 
 // Utility Functions
